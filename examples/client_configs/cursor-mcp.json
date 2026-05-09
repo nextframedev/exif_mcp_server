@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "exif-mcp": {
+      "type": "stdio",
+      "command": "/absolute/path/to/exif_mcp_server/.venv/bin/python",
+      "args": ["-m", "exif_mcp_server.server"]
+    }
+  }
+}

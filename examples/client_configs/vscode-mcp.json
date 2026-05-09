@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "exif-mcp": {
+      "command": "/absolute/path/to/exif_mcp_server/.venv/bin/python",
+      "args": ["-m", "exif_mcp_server.server"]
+    },
+    "exif-mcp-http": {
+      "type": "http",
+      "url": "http://127.0.0.1:8001/mcp"
+    }
+  }
+}

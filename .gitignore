@@ -1,0 +1,16 @@
+.vscode
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.py[cod]
+.DS_Store
+
+docs/*TASKLIST.md
+docs/*ARCHITECTURE.md
+docs/*CHECKLIST.md
