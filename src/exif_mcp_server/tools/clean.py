@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from ..core.exif_cleaner import strip_exif_fields_from_file, strip_exif_from_file
-from ..core.models import StripExifResult, StripSelectedExifResult
 from ._errors import run_with_mcp_error_handling
 
 
@@ -16,7 +15,7 @@ def strip_exif(
     dry_run: bool = False,
     include_comparison: bool = False,
     write_report: bool = False,
-) -> StripExifResult:
+) -> dict[str, Any]:
     """Remove EXIF metadata from a single image.
 
     If `output_path` is omitted, the shared core will later generate a sibling
@@ -26,13 +25,16 @@ def strip_exif(
 
     return run_with_mcp_error_handling(
         "strip_exif",
-        lambda: strip_exif_from_file(
-            image_path=image_path,
-            output_path=output_path,
-            overwrite=overwrite,
-            dry_run=dry_run,
-            include_comparison=include_comparison,
-            write_report=write_report,
+        lambda: cast(
+            dict[str, Any],
+            strip_exif_from_file(
+                image_path=image_path,
+                output_path=output_path,
+                overwrite=overwrite,
+                dry_run=dry_run,
+                include_comparison=include_comparison,
+                write_report=write_report,
+            ),
         ),
     )
 
@@ -45,19 +47,22 @@ def strip_selected_exif_fields(
     dry_run: bool = False,
     include_comparison: bool = False,
     write_report: bool = False,
-) -> StripSelectedExifResult:
+) -> dict[str, Any]:
     """Remove selected EXIF fields from a single image path."""
 
     return run_with_mcp_error_handling(
         "strip_selected_exif_fields",
-        lambda: strip_exif_fields_from_file(
-            image_path=image_path,
-            field_names=field_names,
-            output_path=output_path,
-            overwrite=overwrite,
-            dry_run=dry_run,
-            include_comparison=include_comparison,
-            write_report=write_report,
+        lambda: cast(
+            dict[str, Any],
+            strip_exif_fields_from_file(
+                image_path=image_path,
+                field_names=field_names,
+                output_path=output_path,
+                overwrite=overwrite,
+                dry_run=dry_run,
+                include_comparison=include_comparison,
+                write_report=write_report,
+            ),
         ),
     )
 

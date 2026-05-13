@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from ..core.exif_cleaner import (
     batch_strip_exif_fields_in_folder,
     batch_strip_exif_in_folder,
     batch_strip_gps_exif_in_folder,
-)
-from ..core.models import (
-    BatchStripExifResult,
-    BatchStripGpsExifResult,
-    BatchStripSelectedExifResult,
 )
 from ._errors import run_with_mcp_error_handling
 
@@ -26,7 +21,7 @@ def batch_strip_exif(
     dry_run: bool = False,
     include_comparison: bool = False,
     write_report: bool = False,
-) -> BatchStripExifResult:
+) -> dict[str, Any]:
     """Remove EXIF metadata from supported images in a folder.
 
     Optional dry-run, comparison, and per-file sidecar-report behavior is available.
@@ -34,15 +29,18 @@ def batch_strip_exif(
 
     return run_with_mcp_error_handling(
         "batch_strip_exif",
-        lambda: batch_strip_exif_in_folder(
-            folder_path=folder_path,
-            output_folder=output_folder,
-            recursive=recursive,
-            overwrite=overwrite,
-            extensions=extensions,
-            dry_run=dry_run,
-            include_comparison=include_comparison,
-            write_report=write_report,
+        lambda: cast(
+            dict[str, Any],
+            batch_strip_exif_in_folder(
+                folder_path=folder_path,
+                output_folder=output_folder,
+                recursive=recursive,
+                overwrite=overwrite,
+                extensions=extensions,
+                dry_run=dry_run,
+                include_comparison=include_comparison,
+                write_report=write_report,
+            ),
         ),
     )
 
@@ -56,20 +54,23 @@ def batch_strip_gps_exif(
     dry_run: bool = False,
     include_comparison: bool = False,
     write_report: bool = False,
-) -> BatchStripGpsExifResult:
+) -> dict[str, Any]:
     """Remove only GPS EXIF metadata from supported images in a folder."""
 
     return run_with_mcp_error_handling(
         "batch_strip_gps_exif",
-        lambda: batch_strip_gps_exif_in_folder(
-            folder_path=folder_path,
-            output_folder=output_folder,
-            recursive=recursive,
-            overwrite=overwrite,
-            extensions=extensions,
-            dry_run=dry_run,
-            include_comparison=include_comparison,
-            write_report=write_report,
+        lambda: cast(
+            dict[str, Any],
+            batch_strip_gps_exif_in_folder(
+                folder_path=folder_path,
+                output_folder=output_folder,
+                recursive=recursive,
+                overwrite=overwrite,
+                extensions=extensions,
+                dry_run=dry_run,
+                include_comparison=include_comparison,
+                write_report=write_report,
+            ),
         ),
     )
 
@@ -84,21 +85,24 @@ def batch_strip_selected_exif_fields(
     dry_run: bool = False,
     include_comparison: bool = False,
     write_report: bool = False,
-) -> BatchStripSelectedExifResult:
+) -> dict[str, Any]:
     """Remove selected EXIF fields from supported images in a folder."""
 
     return run_with_mcp_error_handling(
         "batch_strip_selected_exif_fields",
-        lambda: batch_strip_exif_fields_in_folder(
-            folder_path=folder_path,
-            field_names=field_names,
-            output_folder=output_folder,
-            recursive=recursive,
-            overwrite=overwrite,
-            extensions=extensions,
-            dry_run=dry_run,
-            include_comparison=include_comparison,
-            write_report=write_report,
+        lambda: cast(
+            dict[str, Any],
+            batch_strip_exif_fields_in_folder(
+                folder_path=folder_path,
+                field_names=field_names,
+                output_folder=output_folder,
+                recursive=recursive,
+                overwrite=overwrite,
+                extensions=extensions,
+                dry_run=dry_run,
+                include_comparison=include_comparison,
+                write_report=write_report,
+            ),
         ),
     )
 

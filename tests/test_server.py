@@ -1,8 +1,15 @@
 from __future__ import annotations
 
 import asyncio
+from typing import Any, get_type_hints
 
 from exif_mcp_server.server import ServerConfig, config_from_env, create_server, parse_args
+from exif_mcp_server.tools.batch import (
+    batch_strip_exif,
+    batch_strip_gps_exif,
+    batch_strip_selected_exif_fields,
+)
+from exif_mcp_server.tools.clean import strip_exif, strip_selected_exif_fields
 
 
 def test_server_registers_expected_tools_resources_and_prompts() -> None:
@@ -51,6 +58,14 @@ def test_server_applies_remote_transport_settings() -> None:
     assert server.settings.streamable_http_path == "/remote-mcp"
     assert server.settings.json_response is True
     assert server.settings.stateless_http is True
+
+
+def test_mutating_tool_wrappers_expose_plain_dict_results() -> None:
+    assert get_type_hints(strip_exif)["return"] == dict[str, Any]
+    assert get_type_hints(strip_selected_exif_fields)["return"] == dict[str, Any]
+    assert get_type_hints(batch_strip_exif)["return"] == dict[str, Any]
+    assert get_type_hints(batch_strip_gps_exif)["return"] == dict[str, Any]
+    assert get_type_hints(batch_strip_selected_exif_fields)["return"] == dict[str, Any]
 
 
 def test_parse_args_supports_remote_transport_flags() -> None:
