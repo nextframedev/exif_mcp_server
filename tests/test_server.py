@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, get_type_hints
 
+from exif_mcp_server import server as server_module
 from exif_mcp_server.server import ServerConfig, config_from_env, create_server, parse_args
 from exif_mcp_server.tools.batch import (
     batch_strip_exif,
@@ -121,3 +122,53 @@ def test_config_from_env_supports_streamable_http(monkeypatch) -> None:
         json_response=True,
         stateless_http=False,
     )
+
+
+def test_main_swallows_keyboard_interrupt_during_server_shutdown(monkeypatch) -> None:
+    config = ServerConfig(transport="streamable-http")
+
+    class FakeServer:
+        def __init__(self) -> None:
+            self.run_calls: list[dict[str, Any]] = []
+
+        def run(self, **kwargs: Any) -> None:
+            self.run_calls.append(kwargs)
+            raise KeyboardInterrupt
+
+    fake_server = FakeServer()
+    monkeypatch.setattr(server_module, "parse_args", lambda argv=None: config)
+    monkeypatch.setattr(server_module, "create_server", lambda cfg: fake_server)
+
+    server_module.main([])
+
+    assert fake_server.run_calls == [
+        {
+            "transport": "streamable-http",
+            "mount_path": None,
+        }
+    ]
+
+
+def test_main_swallows_cancelled_error_during_server_shutdown(monkeypatch) -> None:
+    config = ServerConfig(transport="sse", mount_path="/github")
+
+    class FakeServer:
+        def __init__(self) -> None:
+            self.run_calls: list[dict[str, Any]] = []
+
+        def run(self, **kwargs: Any) -> None:
+            self.run_calls.append(kwargs)
+            raise asyncio.CancelledError
+
+    fake_server = FakeServer()
+    monkeypatch.setattr(server_module, "parse_args", lambda argv=None: config)
+    monkeypatch.setattr(server_module, "create_server", lambda cfg: fake_server)
+
+    server_module.main([])
+
+    assert fake_server.run_calls == [
+        {
+            "transport": "sse",
+            "mount_path": "/github",
+        }
+    ]

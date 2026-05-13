@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import os
 from dataclasses import dataclass
 from typing import Any, Literal, cast
@@ -215,10 +216,15 @@ def main(argv: list[str] | None = None) -> None:
 
     config = parse_args(argv)
     server = create_server(config)
-    server.run(
-        transport=config.transport,
-        mount_path=config.mount_path if config.transport == "sse" else None,
-    )
+    try:
+        server.run(
+            transport=config.transport,
+            mount_path=config.mount_path if config.transport == "sse" else None,
+        )
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        # FastMCP HTTP transports can surface Ctrl+C as task cancellation after the
+        # server has already shut down cleanly. Treat that path as a normal exit.
+        return
 
 
 if __name__ == "__main__":
